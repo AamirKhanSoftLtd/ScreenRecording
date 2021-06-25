@@ -1,0 +1,277 @@
+﻿@*@{
+        ViewBag.Title = "Home Page";
+    }
+    <div class="jumbotron">
+        <h1>ASP.NET</h1>
+        <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
+        <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <h2>Getting started</h2>
+            <p>
+                ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
+                enables a clean separation of concerns and gives you full control over markup
+                for enjoyable, agile development.
+            </p>
+            <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
+        </div>
+        <div class="col-md-4">
+            <h2>Get more libraries</h2>
+            <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
+            <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
+        </div>
+        <div class="col-md-4">
+            <h2>Web Hosting</h2>
+            <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
+            <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
+        </div>
+    </div>*@
+<html lang="en">
+<head>
+    <title>RecordRTC to ASP.NET MVC | Muaz Khan</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="author" type="text/html" href="https://plus.google.com/+MuazKhan">
+    <meta name="author" content="Muaz Khan">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <link rel="stylesheet" href="https://cdn.webrtc-experiment.com/style.css">
+
+    <style>
+        audio {
+            vertical-align: bottom;
+            width: 10em;
+        }
+
+        video {
+            vertical-align: top;
+            max-width: 100%;
+        }
+
+        input {
+            border: 1px solid #d9d9d9;
+            border-radius: 1px;
+            font-size: 2em;
+            margin: .2em;
+            width: 30%;
+        }
+
+        p, .inner {
+            padding: 1em;
+        }
+
+        li {
+            border-bottom: 1px solid rgb(189, 189, 189);
+            border-left: 1px solid rgb(189, 189, 189);
+            padding: .5em;
+        }
+
+        label {
+            display: inline-block;
+            width: 8em;
+        }
+    </style>
+    <script>
+        document.createElement('article');
+        document.createElement('footer');</script>
+
+    <!-- script used for audio/video/gif recording -->
+    <script src="https://cdn.webrtc-experiment.com/RecordRTC.js"></script>
+</head>
+
+<body>
+    <article>
+
+
+        <section class="experiment">
+
+            <p style="text-align:center;">
+                <video id="preview" controls style="border: 1px solid rgb(15, 158, 238); height: 240px; width: 320px;"></video>
+            </p>
+            <hr />
+
+            <button id="record">Record</button>
+            <button id="stop">Stop</button>
+            <button id="delete">Delete</button>
+
+            <div id="container" style="padding:1em 2em;"></div>
+        </section>
+
+        <script>
+            // PostBlob method uses XHR2 and FormData to submit
+            // recorded blob to the PHP server
+            function PostBlob(blob) {
+                // FormData
+                var formData = new FormData();
+                formData.append('video-filename', fileName);
+                formData.append('video-blob', blob);
+
+                // progress-bar
+                var hr = document.createElement('hr');
+                container.appendChild(hr);
+                var strong = document.createElement('strong');
+                strong.id = 'percentage';
+                strong.innerHTML = 'Video upload progress: ';
+                container.appendChild(strong);
+                var progress = document.createElement('progress');
+                container.appendChild(progress);
+
+                // POST the Blob using XHR2
+                xhr('/Home/PostRecordedAudioVideo', formData, progress, percentage, function (fName) {
+                    container.appendChild(document.createElement('hr'));
+                    var mediaElement = document.createElement('video');
+
+                    var source = document.createElement('source');
+                    source.src = document.location.origin + '/uploads/' + fName.replace(/"/g, '');
+                    console.log('This is location' + source.src);
+                    source.type = 'video/webm; codecs="vp8, vorbis"';
+
+                    mediaElement.appendChild(source);
+
+                    mediaElement.controls = true;
+                    container.appendChild(mediaElement);
+                    mediaElement.play();
+
+                    progress.parentNode.removeChild(progress);
+                    strong.parentNode.removeChild(strong);
+                    hr.parentNode.removeChild(hr);
+                });
+            }
+
+            var record = document.getElementById('record');
+            var stop = document.getElementById('stop');
+            var deleteFiles = document.getElementById('delete');
+
+            var preview = document.getElementById('preview');
+
+            var container = document.getElementById('container');
+
+            var recordVideo;
+            record.onclick = function () {
+
+                navigator.mediaDevices.getDisplayMedia({ video: true, audio: false }).then(function (stream) {
+
+                    preview.srcObject = stream;
+                    preview.play();
+
+                    recordVideo = RecordRTC(stream, {
+                        type: 'video'
+                    });
+                    // alert('start recording');
+                    console.log('start recording');
+
+                    recordVideo.startRecording();
+
+                    stop.disabled = false;
+
+                });
+
+
+                record.disabled = true;
+
+                //navigator.getDisplayrMedia = navigator.getDisplayrMedia || navigator.mozgetDisplayrMedia || navigator.webkitgetDisplayrMedia;
+                //navigator.getDisplayrMedia({
+                //    audio: true,
+                //    video: true
+                //}, function (stream) {
+
+                //    var st = new MediaStream(stream);
+
+                //    preview.srcObject = st;//window.URL.createObjectURL(stream);
+                //    preview.play();
+
+                //    recordVideo = RecordRTC(stream, {
+                //        type: 'video'
+                //    });
+                //    // alert('start recording');
+                //    console.log('start recording');
+
+                //    recordVideo.startRecording();
+
+                //    stop.disabled = false;
+                //}, function (error) {
+                //    //  alert(error.toString());
+                //});
+            };
+
+            var fileName;
+            stop.onclick = function () {
+                record.disabled = false;
+                stop.disabled = true;
+
+                preview.src = '';
+
+                fileName = (Math.round(Math.random() * 99999999) + 99999999) + '.webm';
+
+                recordVideo.stopRecording(function () {
+                    PostBlob(recordVideo.getBlob());
+                });
+
+
+
+                deleteFiles.disabled = false;
+
+                alert('recording stoped');
+                console.log('recording stoped');
+            };
+
+            deleteFiles.onclick = function () {
+                deleteAudioVideoFiles();
+            };
+
+            function deleteAudioVideoFiles() {
+                deleteFiles.disabled = true;
+                if (!fileName) return;
+                var formData = new FormData();
+                formData.append('delete-file', fileName);
+                xhr('/Home/DeleteFile', formData, null, null, function (response) {
+                    console.log(response);
+                });
+                fileName = null;
+                container.innerHTML = '';
+            }
+
+            function xhr(url, data, progress, percentage, callback) {
+                var request = new XMLHttpRequest();
+                request.onreadystatechange = function () {
+                    if (request.readyState == 4 && request.status == 200) {
+                        callback(request.responseText);
+                    }
+                };
+
+                if (url.indexOf('/Home/DeleteFile') == -1) {
+                    request.upload.onloadstart = function () {
+                        percentage.innerHTML = 'Upload started...';
+                    };
+
+                    request.upload.onprogress = function (event) {
+                        progress.max = event.total;
+                        progress.value = event.loaded;
+                        percentage.innerHTML = 'Upload Progress ' + Math.round(event.loaded / event.total * 100) + "%";
+                    };
+
+                    request.upload.onload = function () {
+                        percentage.innerHTML = 'Saved!';
+                    };
+                    //alert('file saved successfully');
+                }
+
+                request.open('POST', url);
+                request.send(data);
+            }
+
+            window.onbeforeunload = function () {
+                if (!!fileName) {
+                    deleteAudioVideoFiles();
+                    return 'It seems that you\'ve not deleted audio/video files from the server.';
+                }
+            };</script>
+    </article>
+
+
+    <script src="https://cdn.webrtc-experiment.com/commits.js" async></script>
+</body>
+</html>
