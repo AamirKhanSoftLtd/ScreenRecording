@@ -15,7 +15,7 @@ namespace ScreenRecordingWebRTC.Controllers
 
         private readonly IWebHostEnvironment _environment;
 
-      
+
 
         private readonly ILogger<HomeController> _logger;
 
@@ -33,48 +33,32 @@ namespace ScreenRecordingWebRTC.Controllers
         }
 
 
-        [RequestFormLimits(MultipartBodyLengthLimit =409715200)]
-        [RequestSizeLimit(409715200)]
+        //[RequestFormLimits(MultipartBodyLengthLimit = 409715200)]
+        //[RequestSizeLimit(409715200)]
         [HttpPost]
-        public ActionResult PostRecordedAudioVideo()
+        public IActionResult PostRecordedAudioVideo()
         {
 
-            //foreach (string upload in Request.Files)
-            //{
-            //    var path = AppDomain.CurrentDomain.BaseDirectory + @"uploads\";
-            //    var file = Request.Files[upload];
-            //    if (file == null) continue;
-            //    file.SaveAs(Path.Combine(path, Request.Form[0]));
-            //}
-            //return Json(Request.Form[0]);
-
-           // IFormFile file = Request.Form.Files[0];
-            string ext = ".mp4";
-            string uno ="ClassRecording" ;
-            int counter = 0;
-           
-                foreach (var upload in Request.Form.Files)
-                {
-
-                string filepath = $"uploads/{uno}{ext}";
-                var uploads = Path.Combine(_environment.WebRootPath, filepath);
+            foreach (var fromFile in Request.Form.Files)
+            {
                 var file = Request.Form.Files[0];
-                using (var stream = new FileStream(uploads, FileMode.Create))
-                    {
-                        file.CopyToAsync(stream);
-                    } 
+                string filepath = @"uploads\ClassRecording_28062021.webm";
+                var uploads = Path.Combine(_environment.WebRootPath, filepath);
+
+                using (var stream = System.IO.File.Create(uploads))
+                {
+                    file.CopyTo(stream);
                 }
+            }
             return Json(Request.Form.Files[0]);
 
-
         }
-
         // ---/RecordRTC/DeleteFile
         [HttpPost]
         public ActionResult DeleteFile()
         {
             var fileUrl = AppDomain.CurrentDomain.BaseDirectory + "uploads/" + Request.Form["delete-file"] + ".webm";
-            new FileInfo(fileUrl).Delete();
+            //  new FileInfo(fileUrl).Delete();
             return Json(true);
         }
 
