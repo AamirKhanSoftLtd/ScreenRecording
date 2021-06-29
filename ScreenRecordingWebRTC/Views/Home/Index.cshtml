@@ -79,7 +79,8 @@
         document.createElement('footer');</script>
 
     <!-- script used for audio/video/gif recording -->
-    <script src="https://cdn.webrtc-experiment.com/RecordRTC.js"></script>
+    @*<script src="https://cdn.webrtc-experiment.com/RecordRTC.js"></script>*@
+    <script src="~/js/RecordRTC.js"></script>
 </head>
 
 <body>
@@ -129,7 +130,7 @@
 
 
                 xhr('/Home/PostRecordedAudioVideo', formData, progress, percentage, function (fName) {
-                   
+
                     container.appendChild(document.createElement('hr'));
                     var mediaElement = document.createElement('video');
 
@@ -185,7 +186,7 @@
                     + currentdate.getHours() + ""
                     + currentdate.getMinutes() + ""
                     + currentdate.getSeconds();
-                return "ClassRecording_" + datetime+".webm";
+                return "ClassRecording_" + datetime + ".webm";
             }
 
             var fileName;
