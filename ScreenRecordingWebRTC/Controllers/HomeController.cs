@@ -31,8 +31,6 @@ namespace ScreenRecordingWebRTC.Controllers
         {
             return View();
         }
-
-
         //[RequestFormLimits(MultipartBodyLengthLimit = 409715200)]
         //[RequestSizeLimit(409715200)]
         [HttpPost]
@@ -42,7 +40,8 @@ namespace ScreenRecordingWebRTC.Controllers
             foreach (var fromFile in Request.Form.Files)
             {
                 var file = Request.Form.Files[0];
-                string filepath = @"uploads\ClassRecording_28062021.webm";
+                var actualFileName = Request.Form["actualFileName"];
+                string filepath = @"uploads\" + actualFileName;
                 var uploads = Path.Combine(_environment.WebRootPath, filepath);
 
                 using (var stream = System.IO.File.Create(uploads))
@@ -58,7 +57,7 @@ namespace ScreenRecordingWebRTC.Controllers
         public ActionResult DeleteFile()
         {
             var fileUrl = AppDomain.CurrentDomain.BaseDirectory + "uploads/" + Request.Form["delete-file"] + ".webm";
-            //  new FileInfo(fileUrl).Delete();
+            //new FileInfo(fileUrl).Delete();
             return Json(true);
         }
 

@@ -107,8 +107,11 @@
                 // FormData
                 var formData = new FormData();
                 // console.log(blob);
+                var fn = GetFileName();
+                // fileName = "ClassRecording_" + dt + ".webm";
                 formData.append('video-filename', fileName);
                 formData.append('video-blob', blob);
+                formData.append('actualFileName', fn);
                 // console.log(formData);
 
                 // progress-bar
@@ -126,7 +129,7 @@
 
 
                 xhr('/Home/PostRecordedAudioVideo', formData, progress, percentage, function (fName) {
-                    debugger;
+                   
                     container.appendChild(document.createElement('hr'));
                     var mediaElement = document.createElement('video');
 
@@ -162,33 +165,37 @@
 
                     preview.srcObject = stream;
                     preview.play();
-
                     recordVideo = RecordRTC(stream, {
                         type: 'video'
                     });
                     // alert('start recording');
                     console.log('start recording');
-
                     recordVideo.startRecording();
-
                     stop.disabled = false;
-
                 });
-
-
                 record.disabled = true;
 
             };
 
+            function GetFileName() {
+                var currentdate = new Date();
+                var datetime = currentdate.getDate() + ""
+                    + (currentdate.getMonth() + 1) + ""
+                    + currentdate.getFullYear() + ""
+                    + currentdate.getHours() + ""
+                    + currentdate.getMinutes() + ""
+                    + currentdate.getSeconds();
+                return "ClassRecording_" + datetime+".webm";
+            }
+
             var fileName;
             stop.onclick = function () {
+
                 record.disabled = false;
                 stop.disabled = true;
-
                 preview.src = '';
 
-                fileName = "ClassRecording_28062021.webm";//(Math.round(Math.random() * 99999999) + 99999999) + '.webm';
-
+                fileName = GetFileName();
                 recordVideo.stopRecording(function () {
                     PostBlob(recordVideo.getBlob());
                 });
@@ -197,7 +204,7 @@
 
                 deleteFiles.disabled = false;
 
-                console.log('recording stoped');
+
             };
 
             deleteFiles.onclick = function () {
